@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Collections.Generic;
 
-namespace SocketClientServer
+
+namespace SocketServer
 {
     class MyServer
     {
         static int Port = 5544;
-        static string IPAdressOfServer = Console.ReadLine();
+        static string IPAdressOfServer = "127.0.0.1";
 
         public static Socket CreateSocketForServer()
         {
@@ -29,26 +29,26 @@ namespace SocketClientServer
             while (true)
             {
                 Socket handlerSocket = listenSocket.Accept();
-                StringBuilder builder = new StringBuilder();
-                int bytes = 0; // количество полученных байтов
-                byte[] data = new byte[256]; // буфер для получаемых данных
+                byte[] data = new byte[1];
+                handlerSocket.Receive(data);
 
-                do
+                Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + data[0].ToString());
+                var brigadesAndSurnames = BrigadesRepository.Get();
+                string[] surnames = brigadesAndSurnames[data[0]];
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (string surname in surnames)
                 {
-                    bytes = handlerSocket.Receive(data);
-                    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                    stringBuilder.Append($" {surname} ");           
+
                 }
-                while (handlerSocket.Available > 0);
+                string s = stringBuilder.ToString();
+                byte[] dataToSend = Encoding.Unicode.GetBytes(s);
 
-                Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
+                handlerSocket.Send(dataToSend);
 
-                // отправляем ответ
-                string message = "ваше сообщение доставлено";
-                data = Encoding.Unicode.GetBytes(message);
-                handlerSocket.Send(data);
-                // закрываем сокет
-                handlerSocket.Shutdown(SocketShutdown.Both);
-                handlerSocket.Close();
+                //handlerSocket.Shutdown(SocketShutdown.Both);
+                //handlerSocket.Close();
             }
 
         }
