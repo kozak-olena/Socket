@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using Newtonsoft.Json;
 
 namespace SocketClient
 {
@@ -23,12 +24,41 @@ namespace SocketClient
 
             return socket;
         }
+        public static string CovnertToJSON(int input)
+        {
+            if (input == 1)
+            {
+                return JsonConvert.SerializeObject(new ServerRequest { Operation = "GetMyBrigadeNumber" });
+            }
+            else if (input == 2)
+            {
+                return JsonConvert.SerializeObject(new ServerRequest { Operation = " GetSurnamesOfMyBrigade" });
+            }
+            else if (input == 3)
+            {
+                return JsonConvert.SerializeObject(new ServerRequest { Operation = "GetSurnamesByBrigade'sID" });
+            }
+            else if (input == 4)
+            {
+                return JsonConvert.SerializeObject(new ServerRequest { Operation = "exit" });
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
 
-        public static void SendReceiveClient(Socket socket, string input)
+        class ServerRequest
+        {
+            public string Operation { get; set; }
+
+        }
+
+        public static void SendReceiveClient(Socket socket, string converted)
         {
 
-            byte numberOfBrigades = byte.Parse(input);
-            socket.Send(new[] { numberOfBrigades });
+
+            socket.Send(new[] { bytess });
 
             byte[] data = new byte[256];
             StringBuilder builder = new StringBuilder();
