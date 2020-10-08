@@ -30,7 +30,7 @@ namespace SocketClient
             do
             {
                 Socket socketForClient = MyClient.CreateSocketForClient(IPAdressOfServer);
-                string JSONConverted = MyClient.CovnertToJSON(input);
+                string JSONConverted = ConvertedToJSON.CovnertToJSON(input);
 
                 MyClient.SendReceiveClient(socketForClient, JSONConverted);
             }
@@ -39,5 +39,5 @@ namespace SocketClient
 
     }
 }
-}
+
 

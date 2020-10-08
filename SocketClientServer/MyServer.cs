@@ -24,17 +24,31 @@ namespace SocketServer
             return listenSocket;
         }
 
+
+
+
         public static void SendReceiveServer(Socket listenSocket)
         {
             while (true)
             {
                 Socket handlerSocket = listenSocket.Accept();
-                byte[] data = new byte[1];
-                handlerSocket.Receive(data);
+                int bytes = 0;
+                byte[] dataToReceive = new byte[256];
+                StringBuilder builder = new StringBuilder();
+                do
+                {
+                    bytes = handlerSocket.Receive(dataToReceive);
+                    builder.Append(Encoding.UTF8.GetString(dataToReceive, 0, bytes));
+                }
+                while (handlerSocket.Available > 0);
+                 
 
-                Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + data[0].ToString());
+
+                Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
+
+
                 var brigadesAndSurnames = BrigadesRepository.Get();
-                string[] surnames = brigadesAndSurnames[data[0]];
+                string[] surnames = brigadesAndSurnames[dataToReceive[0]];
                 StringBuilder stringBuilder = new StringBuilder();
 
                 foreach (string surname in surnames)
